@@ -18,6 +18,6 @@ def sudoku():
         #   cv2.read() ???
         return '200'
 
-
+#TODO move to index.py as main entrance.
 if __name__ == "__main__":
     app.run(debug=True, host=appconfig.HOST, port=appconfig.PORT)
