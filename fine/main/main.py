@@ -1,5 +1,5 @@
-from app.util import util
-from app.config import appconfig
+from config import appconfig
+from util import util
 from flask import Flask
 from flask import request
 import os
@@ -17,7 +17,3 @@ def sudoku():
         # 2. cv read
         #   cv2.read() ???
         return '200'
-
-#TODO move to index.py as main entrance.
-if __name__ == "__main__":
-    app.run(debug=True, host=appconfig.HOST, port=appconfig.PORT)

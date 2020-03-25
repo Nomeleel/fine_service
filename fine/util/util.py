@@ -1,4 +1,4 @@
-from app.config import appconfig
+from config import appconfig
 
 
 def uniqueName(self, base_name):
