@@ -5,21 +5,41 @@
 # 5. Sudoku.
 # 6. If not solve will save image.
 
+from module.neuralnetwork.digitalRecognizer import DigitalRecognizer
+from module.sudoku import solvingSudoku
 import cv2
 import numpy as np
-
+import os
 
 class Sudoku:
 
-    image = None
+    def __init__(self, image_source=None, sudoku_str=None):
+        self.image_source =  image_source
+        self.sudoku_str = sudoku_str
 
-    def __init__(self, image_source):
-        self.loadImage(image_source)
+    def execute(self):
+
+        if self.sudoku_str is None:
+            self.parseToSudokuStr()
+
+        result = self.solvingSudoku()
+        
+        if result:
+            self.printSudokuResult()
+        else:
+            self.unSolvedAction()
+        
+        return result, self.sudoku_result
+
+    def parseToSudokuStr(self):
+        self.loadImage(self.image_source)
+        
+        #TODO async
+        self.digital_recognizer = DigitalRecognizer()
         image = self.findSudoku()
-        cv2.imshow('image', image)
         cells = self.splitToCells(image)
-        cv2.imshow('Cells[2]', cells[2])
-        cv2.waitKey(0)
+
+        self.sudoku_str = self.recognitionAllCell(cells)
 
     def loadImage(self, image_source):
         # image source is path.
@@ -86,8 +106,38 @@ class Sudoku:
 
         return cell
 
-    def recognitionToDigit(self, image):
-        pass
+    def recognitionToDigit(self, cell):
+        digit = self.digital_recognizer.digitRecognition(cell)
+        
+        return digit if not digit is None else '.'
+
+    def recognitionAllCell(self, cells):
+
+        return ''.join(self.recognitionToDigit(cell) for cell in cells)
+
+    def solvingSudoku(self):
+        result = solvingSudoku.solve(self.sudoku_str)
+        if result:
+            self.sudoku_result = ''.join(result)
+            result = True
+        else:
+            self.sudoku_result = self.sudoku_str
+        
+        return result
+
+    # TODO imp
+    def printSudokuResult(self):
+        print('----------------------------------------------------------------------------------')
+        print(self.sudoku_result)
+        print('----------------------------------------------------------------------------------')
+
+    # 图像模式下，得不到结果，可能是扫描出现问题，记录下来对训练是数据集是有价值的。
+    # 字符串模式下，得不到结果，那一定是因为字符串不合法。
+    def unSolvedAction(self):
+        if self.image:
+            # TODO format str
+            self.saveImage(os.getcwd() + '\\module\\sudoku\\unsolvedlog\\' + self.sudoku_str + '.png')
+            # 文件名可能不利于查看，建议输出到txt文件中
 
     def findMaxContour(self, image):
         # Find all contours.
