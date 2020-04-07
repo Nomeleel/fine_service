@@ -125,11 +125,14 @@ class Sudoku:
         
         return result
 
-    # TODO imp
     def printSudokuResult(self):
-        print('----------------------------------------------------------------------------------')
-        print(self.sudoku_result)
-        print('----------------------------------------------------------------------------------')
+        if not self.sudoku_str is None and not self.sudoku_result is None and self.sudoku_str != self.sudoku_result:
+            for i in range(9):
+                for j in range(9):
+                    # Background color: 41: red; 42: green; 44 blue;
+                    offset = 4 if self.sudoku_str[9 * i + j] != '.' else ((i // 3 + j // 3) % 2 + 1)
+                    print("\033[4;%sm %s \033[0m" % (str(40 + offset), self.sudoku_result[9 * i + j]), end='')
+                print()
 
     # 图像模式下，得不到结果，可能是扫描出现问题，记录下来对训练是数据集是有价值的。
     # 字符串模式下，得不到结果，那一定是因为字符串不合法。
