@@ -28,7 +28,7 @@ class Sudoku:
             self.printSudokuResult()
         else:
             self.unSolvedAction()
-        
+
         return result, self.sudoku_result
 
     def parseToSudokuStr(self):
@@ -109,14 +109,18 @@ class Sudoku:
     def recognitionToDigit(self, cell):
         digit = self.digital_recognizer.digitRecognition(cell)
         
-        return digit if not digit is None else '.'
+        return digit if not digit is None else '0'
 
     def recognitionAllCell(self, cells):
 
         return ''.join(self.recognitionToDigit(cell) for cell in cells)
 
     def solvingSudoku(self):
-        result = solvingSudoku.solve(self.sudoku_str)
+        result = False
+        try:
+            result = solvingSudoku.solve(self.sudoku_str)
+        except Exception as e:
+            print('This sudoku unsolved!')
         if result:
             self.sudoku_result = ''.join(result)
             result = True
@@ -130,14 +134,14 @@ class Sudoku:
             for i in range(9):
                 for j in range(9):
                     # Background color: 41: red; 42: green; 44 blue;
-                    offset = 4 if self.sudoku_str[9 * i + j] != '.' else ((i // 3 + j // 3) % 2 + 1)
+                    offset = 4 if self.sudoku_str[9 * i + j] in '123456789' else ((i // 3 + j // 3) % 2 + 1)
                     print("\033[4;%sm %s \033[0m" % (str(40 + offset), self.sudoku_result[9 * i + j]), end='')
                 print()
 
-    # 图像模式下，得不到结果，可能是扫描出现问题，记录下来对训练是数据集是有价值的。
+    # 图像模式下，得不到结果，可能是扫描出现问题，记录下来对训练数据集是有价值的。
     # 字符串模式下，得不到结果，那一定是因为字符串不合法。
     def unSolvedAction(self):
-        if self.image:
+        if hasattr(self, 'image') and not self.image is None:
             # TODO format str
             self.saveImage(os.getcwd() + '\\module\\sudoku\\unsolvedlog\\' + self.sudoku_str + '.png')
             # 文件名可能不利于查看，建议输出到txt文件中
